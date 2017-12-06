@@ -6,6 +6,8 @@ import Network.TCPConnectionListener;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.ArrayList;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 public class ChatServer implements TCPConnectionListener {
 
@@ -14,6 +16,7 @@ public class ChatServer implements TCPConnectionListener {
     }
 
     private final ArrayList<TCPConnection> connections = new ArrayList<>();
+    private Logger logger = Logger.getLogger(ChatServer.class.getName());
 
     private ChatServer() {
         System.out.println("Server running...");
@@ -34,6 +37,7 @@ public class ChatServer implements TCPConnectionListener {
     @Override
     public synchronized void onConnectionReady(TCPConnection tcpConnection) {
         connections.add(tcpConnection);
+        logger.log(Level.INFO, "Запись лога с уровнем INFO (информационная)");
         sendToAllConnections("Client connected: " + tcpConnection);
     }
 
@@ -46,12 +50,14 @@ public class ChatServer implements TCPConnectionListener {
     @Override
     public synchronized void onDisconnect(TCPConnection tcpConnection) {
         connections.remove(tcpConnection);
+        logger.log(Level.INFO, "Запись лога с уровнем INFO (информационная)");
         sendToAllConnections("Client disconnected: " + tcpConnection);
     }
 
     @Override
     public synchronized void onException(TCPConnection tcpConnection, Exception e) {
         System.out.println("TCPConnection exception: " + e);
+        logger.log(Level.WARNING, "Запись лога с уровнем WARNING (информационная)");
     }
 
 
@@ -59,7 +65,6 @@ public class ChatServer implements TCPConnectionListener {
         System.out.println(value);
         final int cnt = connections.size();
         for (int i = 0; i < cnt; i++) {
-
                 connections.get(i).sendString(value);
         }
     }
